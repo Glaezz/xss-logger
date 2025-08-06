@@ -11,11 +11,11 @@
     },
     {
       "src": "/",
-      "dest": "/api/index.php"
+      "dest": "/api/index.html"
     },
     {
-      "src": "/tutorial",
-      "dest": "/api/tutorial.php"
+      "src": "/logger",
+      "dest": "/api/logger.php"
     },
     {
       "src": "/public/(.*)",
