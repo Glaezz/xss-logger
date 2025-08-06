@@ -56,8 +56,18 @@
 
         // Handle delete request (clear Google Sheet)
         if (isset($_POST['delete'])) {
-            $clearUrl = $sheetApiUrl . '?action=clear';
-            $result = @file_get_contents($clearUrl);
+            $clearUrl = $sheetApiUrl;
+            $postData = http_build_query(['action' => 'clear']);
+            $options = [
+                'http' => [
+                    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                    'method'  => 'POST',
+                    'content' => $postData,
+                    'timeout' => 5
+                ]
+            ];
+            $context  = stream_context_create($options);
+            $result = @file_get_contents($clearUrl, false, $context);
             $deleteAction = true;
             if ($result === false) {
                 echo '<p style="color: red;">Failed to clear log data on Google Sheets.</p>';
@@ -88,7 +98,7 @@
         } elseif (!$deleteAction) {
             echo '<p>No cookies have been logged yet.</p>';
         }
-        
+
         ?>
 
         <form method="post" class="delete-form">
